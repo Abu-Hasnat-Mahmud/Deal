@@ -1,0 +1,112 @@
+﻿@model PayType
+@inject Deal.Services.IUserService userService
+
+@{
+    ViewData["Title"] = "Product";
+}
+
+
+<style>
+    #output_image {
+        width: 120px;
+        height: 100px;
+        /*border-color: lightgray;*/
+        border: 1px dashed lightgray;
+    }
+</style>
+
+<style media="screen and (max-width:730px)">
+    #output_image {
+        width: 70px;
+        height: 50px;
+    }
+</style>
+
+<div class="container">
+    <h1 class="my-4">Payment Type</h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Create" enctype="multipart/form-data" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @if (Model == null) // for create new link
+                {
+                    <input asp-for="PayTypeId" value="0" type="hidden" />
+                    <input asp-for="DateAdded" value="@DateTime.Now" type="hidden" />
+                    <input asp-for="DateUpdated" type="hidden" />
+
+                    <input asp-for="UserId" value="@userService.GetUserId()" type="hidden" />
+                }
+                else // for update link
+                {
+                    <input asp-for="PayTypeId" type="hidden" />
+                    <input asp-for="DateAdded" type="hidden" />
+
+                    <input asp-for="DateUpdated" value="@DateTime.Now" type="hidden" />
+                    <input asp-for="UserId" type="hidden" />
+                }
+
+                <div class="form-group mb-3">
+                    <label asp-for="PayTypeName" class="control-label"></label>
+                    <input asp-for="PayTypeName" class="form-control" />
+                    <span asp-validation-for="PayTypeName" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Icon" class="control-label"></label>
+                    <input asp-for="Icon" class="form-control" />
+                    <span asp-validation-for="Icon" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="IsActive" />
+                        @Html.DisplayNameFor(model => model.IsActive)
+                    </label>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="IsCustom" />
+                        @Html.DisplayNameFor(model => model.IsCustom)
+                    </label>
+                </div>
+
+
+                <div class="form-group mb-3">
+
+                    @if (Model != null)
+                    {
+                        <input type="submit" value="Update" class="btn btn-warning" />
+                        <button type="submit" name="isDelete" value="true" class="btn btn-danger">Delete</button>
+                    }
+                    else
+                    {
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    }
+                    <a asp-action="Index" class="btn btn-outline-info">Back to List</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+
+    <script>
+
+        function preview_image(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('output_image');
+                output.src = reader.result;
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

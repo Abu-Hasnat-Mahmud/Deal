@@ -1,0 +1,94 @@
+﻿@model QRPaymentReceive
+
+@{
+    ViewData["Title"] = "Pay With QR";
+    Layout = "_EmbedLayout";
+}
+
+
+<div class="row row-cols-1 justify-content-center shadow mx-5 my-3 p-4 rounded-2" style="background-color:ghostwhite;">
+    <div class="col-md-4 col-12">
+        @*<form method="post" asp-controller="Payment" asp-action="QRPaymentReceive">*@
+        <div asp-validation-summary="ModelOnly"></div>
+        <input type="hidden" asp-for="Key" value="@ViewBag.Key" />
+
+        <div class="form-group my-2">
+            <label asp-for="Amount" class="control-label"></label>
+            <div class="input-group">
+                <input class="form-control" asp-for="Amount" placeholder="amount" />
+                <span class="input-group-append">
+                    <select asp-items="ViewBag.Currency" asp-for="CurrId" class="form-select">
+                    </select>
+                </span>
+            </div>
+            <span asp-validation-for="Amount" class="text-danger"></span>
+        </div>
+        
+        <div class="form-group my-2">
+            <label asp-for="UserEmail" class="control-label"></label>
+            <div class="input-group">
+                <input class="form-control" asp-for="UserEmail" placeholder="email" />
+                <span asp-validation-for="UserEmail" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group my-2">
+            <label asp-for="Address" class="control-label"></label>
+            <textarea asp-for="Address" class="form-control" placeholder="address"></textarea>
+            <span asp-validation-for="UserEmail" class="text-danger"></span>
+        </div>
+
+        <div class="form-group my-2 text-center">
+            <input type="button" id="go-pay" class="btn btn-primary" value="GO PAY" />
+        </div>
+        @*</form>*@
+
+    </div>
+
+
+</div>
+
+
+
+
+
+@section Scripts{
+    <script>
+
+    $(document).ready(() => {
+
+        $("#go-pay").click(() => {
+            const recPayment = {
+                Key: $("#Key").val(),
+                Amount: $("#Amount").val().trim(),
+                CurrId: $("#CurrId").val(),
+                UserEmail: $("#UserEmail").val().trim(),
+                Address: $("#Address").val().trim()
+            }
+            //console.log(recPayment);
+            $.ajax({
+                url: '@Url.ActionLink("QRPaymentReceive","Payment")',
+                method: 'POST',
+                dataType: 'json',
+                data: { model: recPayment },
+                success: (result) => {
+                    if (result.success) {
+                        location.href = result.link;
+                    } else {
+                        alert(result.message);
+                    }
+                },
+                error: (err) => {
+                    alert("error");
+                    console.error(err);
+                }
+            });
+        });
+    });
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+
+

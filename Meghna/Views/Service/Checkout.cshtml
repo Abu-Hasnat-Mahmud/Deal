@@ -1,0 +1,112 @@
+﻿@model IEnumerable<CheckoutMaster>
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="container">
+    <h1 class="text-center my-4">Checkout</h1>
+
+
+    <a asp-action="CheckoutCreate" class="btn btn-info mb-3">Create New</a>
+
+    <table class="table table-hover w-100">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Title)
+                </th>
+                <th>
+                    Item
+                </th>
+
+                <th>
+                    Share
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <a href="#" class=" font-weight-bold text-decoration-none" onclick="GotoEdit(@item.MasterId)"> @item.Title</a>
+
+                    </td>
+                    <td>
+                        @item.CheckoutDetailses.FirstOrDefault()?.Product.Name - @item.CheckoutDetailses.FirstOrDefault()?.Price @item.CheckoutDetailses.FirstOrDefault()?.Product.Currency.Name
+                    </td>
+
+                    <td>
+                        <button type="button" class="btn btn-light text-primary" onclick="Embed('@item.Key')" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            <i class="fas fa-less-than "></i> Embed <i class="fas fa-greater-than"></i>
+                        </button>
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Embed Checkout</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+               <textarea id="embed-code" class="form-control"></textarea>
+            </div>
+            <div class="modal-footer">               
+                <button type="button" class="btn btn-primary" title="COPY" onclick="CopyClipboard()"><i class="fas fa-clipboard"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+
+    <script>
+
+        // goto edit
+        const GotoEdit = (id) => {
+            window.location.href = '@Url.ActionLink("CheckoutEdit", "Service")' + '?id=' + id;
+        }
+
+
+        const Embed = (key) => {
+            const embdedCode = `<iframe src="@Url.ActionLink("PayWithCheckout","Service")/${key}" scrolling="no" frameborder="0" style="width:100%; height: 460px;">`;
+            $("#embed-code").val(embdedCode);
+        }
+
+        // copy code by click
+        const CopyClipboard = () => {
+            $("#embed-code").select();
+            navigator.clipboard.writeText($("#embed-code").val().trim());
+        }
+
+        $(document).ready(() => {
+
+            var table = $('.table').DataTable({
+                // lengthChange: false,
+                "scrollX": true,
+                buttons: ['copy', 'excel', 'pdf', 'colvis']
+            });
+            table.buttons().container()
+                .appendTo('#example_wrapper .col-md-6:eq(0)');
+        });
+
+
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

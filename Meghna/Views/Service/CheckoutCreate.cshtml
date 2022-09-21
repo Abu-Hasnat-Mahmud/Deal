@@ -1,0 +1,433 @@
+﻿@model CheckoutMaster
+@inject Deal.Services.IUserService userService
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<style>
+    .Box-root-setup {
+        box-sizing: border-box;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+    }
+</style>
+
+<div class="row row-cols-1 row-cols-md-2 g-2 m-2">
+    @*setting side*@
+    <div class="card ">
+        <form>
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @if (Model == null) // for create
+            {
+                <input asp-for="MasterId" value="0" type="hidden" />
+                <input asp-for="DateAdded" value="@DateTime.Now" type="hidden" />
+                <input asp-for="DateUpdated" type="hidden" />
+                <input asp-for="UserId" value="@userService.GetUserId()" type="hidden" />
+                <input asp-for="Key" type="hidden" />
+            }
+            else // for update
+            {
+                <input asp-for="MasterId" type="hidden" />
+                <input asp-for="DateAdded" type="hidden" />
+                <input asp-for="DateUpdated" value="@DateTime.Now" type="hidden" />
+                <input asp-for="UserId" type="hidden" />
+                <input asp-for="Key" type="hidden" />
+            }
+            <div class="form-group m-3">
+                <label asp-for="Title" class="control-label"></label>
+                <div class="input-group">
+                    <input asp-for="Title" class="form-control" />
+                </div>
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+
+            <!--<div class="form-group m-3">
+    <label asp-for="ClientId" class="control-label"></label>
+    <div class="input-group">
+
+        <select asp-for="ClientId" asp-items="ViewBag.Clients" class="form-select">
+            <option>Select Client</option>
+        </select>-->
+            @*<span class="input-group-append">
+            <a class="btn btn-primary" target="_blank" title="Create new client" asp-controller="Client" asp-action="Create"><i class="fas fa-plus"></i></a>
+        </span>*@
+
+            <!--</div>
+        <span asp-validation-for="ClientId" class="text-danger"></span>
+    </div>-->
+
+
+            <div class="form-group m-3 ">
+                <label for="ProductId" class="control-label">Product</label>
+                <div class="card p-2">
+                    <div class="input-group">
+                        <select id="ProductId" name="ProductId" asp-items="ViewBag.Products" class="form-select">
+                            <option value="">Select Product</option>
+                        </select>
+                        <span class="input-group-append">
+                            <button type="button" id="btn-item-add" class="btn btn-primary" title="Add product"><i class="fas fa-plus"></i></button>
+                        </span>
+                        <span class="text-danger field-validation-valid" data-valmsg-for="ProductId" data-valmsg-replace="true"></span>
+
+                    </div>
+
+                    <div class="my-3">
+                        <table class="table table-hover table-light" id="item-seting-area">
+                            <tbody>
+                                @if (Model != null)
+                                {
+                                    foreach (var item in Model.CheckoutDetailses)
+                                    {
+                                        <tr>
+
+                                            <td class="d-none">@item.DetaileId</td>
+                                            <td class="d-none">@item.ProductId</td>
+                                            <td>
+                                                <div class="d-flex  justify-content-evenly">
+                                                    <p>@item.Product.Name</p>
+                                                    <div class="Box-root-setup" style="background-image: url(..@item.Product.Image)"></div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input type="number" onchange="priceUpdate(this)" id="setup-item-price" min="1" value="@item.Price" /> @item.Product.Currency.Name
+                                            </td>
+                                            <td>
+                                                <h5 class="text-danger" id="cancel-item" onclick="removeItem(this,@item.DetaileId)"><i class="far fa-times-circle"></i></h5>
+                                            </td>
+                                        </tr>
+
+                                    }
+                                }
+
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            <div class="form-group ms-3">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsCallbackURL" />
+                    @Html.DisplayNameFor(model => model.IsCallbackURL)
+                </label>
+            </div>
+
+            <div class="form-group mx-3">
+                @*<label asp-for="CallbackUrl" class="control-label"></label>*@
+                <div class="input-group">
+                    <input asp-for="CallbackUrl" class="form-control" placeholder="Set callback URL" />
+                </div>
+                <span asp-validation-for="CallbackUrl" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check m-3">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsCustomPayment" />
+                    @Html.DisplayNameFor(model => model.IsCustomPayment)
+                </label>
+            </div>
+
+            <div class="form-group m-3">
+
+                @if (Model != null)
+                {
+                    <input type="button" value="Update" onClick="postData('Update')" class="btn btn-warning" />
+                    <input type="button" value="Delete" onClick="postData('Delete')" class="btn btn-danger" />
+                }
+                else
+                {
+                    <input type="button" value="Create" onClick="postData('Create')" class="btn btn-primary" />
+                }
+                <a asp-action="Checkout" class="btn btn-outline-info">Back to List</a>
+            </div>
+        </form>
+    </div>
+
+    @*preview side*@
+    <div class="card ">
+        <partial name="_PreviewCheckout" model="@Model" />
+    </div>
+
+</div>
+
+
+@section Scripts{
+
+    <script>
+        // default product object
+        const defaultProduct = {
+            Name: "Item",
+            Price: 0,
+            Currency: {
+                Name: "$"
+            },
+            Image: "/images/empty.jpg"
+        };
+
+        let checkOutMaster = {
+            MasterId: 0,
+            ClienId: 0,
+            Title: '',
+            Key: '',
+            Address: '',
+            IsCustomPayment: '',
+            IsCallbackURL: '',
+            CallbackUrl: '',
+            DateAdded: '',
+            DateUpdated: '',            
+            IsDelete: '',
+            UserId: '',
+            CheckoutDetailses: []
+        }
+
+        //let checkoutDetails = {
+        //    DetaileId: 0,
+        //    ProductId: 0,
+        //    Price: 0,
+        //    Quantity: 1,
+        //    MasterId: 0,
+        //    IsDelete: 0
+        //}
+
+       @*console.log(@Html.Raw(Json.Serialize(Model)));*@
+        let model =@Html.Raw(Json.Serialize(Model));
+
+        if (model !== null) {
+            checkOutMaster = model;
+           // console.log(model);
+        }
+
+        // update model
+        const updateModel = (product) => {
+            // debugger;
+
+            //checkOutMaster.CheckoutDetailses.push()
+            // checkoutDetails.ProductId = product.productId;
+            //checkoutDetails.Price = product.Price;
+            //checkoutDetails.Quantity = product.Quantity;
+
+            const checkoutDetails = {
+                DetaileId: 0,
+                ProductId: product.ProductId,
+                Price: product.Price,
+                Quantity: 1,
+                MasterId: $("#MasterId").val(),
+                IsDelete: false
+            }
+
+            checkOutMaster.CheckoutDetailses.push(checkoutDetails)
+
+            //console.log(checkOutMaster);
+        };
+
+
+        // preview item
+        const previewItem = (product) => {
+            $("#preview-item-name").text(product.Name);
+            $("#preview-item-price").text(product.Price);
+            $("#preview-item-currency").text(product.Currency.Name);
+            $("#preview-item-image").css('background-image', `url("..${product.Image}")`);
+        };
+
+        // set item
+        const setItem = (product) => {
+
+            const singleItem =`<tr>
+                    <td class="d-none">0</td>
+                    <td class="d-none">${product.ProductId}</td>
+                    <td>
+                        <div class="d-flex  justify-content-evenly">
+                            <p>${product.Name}</p>
+                            <div class="Box-root-setup" style="background-image: url(${product.Image}"></div>
+                        </div>
+                    </td>
+                    <td>
+                       <input type="number" onchange="priceUpdate(this)" id="setup-item-price" min="1" value="${product.Price}" /> ${product.Currency.Name}
+                    </td>
+                    <td>
+                        <h5 class="text-danger" id="cancel-item" onclick="removeItem(this,0)"><i  class="far fa-times-circle"></i></h5>
+                    </td>
+                </tr>`;
+
+            $("#item-seting-area tbody tr").remove();
+            $("#item-seting-area tbody").append(singleItem);
+
+            updateModel(product);
+            previewItem(product);
+        };
+
+        const checkItem = (productId) => {
+            // find the item or exist or not, if item exist and isdelete false then return true
+            return checkOutMaster?.CheckoutDetailses?.find(item => item.ProductId == productId && item.IsDelete == false);
+        }
+
+        $(document).ready(() => {
+            //$('form').validate(); /// for form validation
+
+            // get product info by product id
+            $("#ProductId").change(() => {
+                const productId = $("#ProductId").val() || 0;
+                if (productId == 0) return;
+
+                //console.log("item check ", checkItem(productId));
+                if (!checkItem(productId)) { // if the item exist
+                     $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: '@Url.ActionLink("GetSingleProductAJAX", "Product")',
+                    data: { productId: productId },
+                    success: function (result) {
+                        //console.log(result);
+                        if (result !== null) {
+                            setItem(result);
+                        }
+                    },
+                    error: (err) => console.error(err)
+                });
+                }
+
+            });
+        });
+
+        // remove added product
+        const removeItem= (e,id) => {
+            $("#ProductId").val("").change();
+
+            // udpate delete status
+            if (id !== 0) {
+                checkOutMaster.CheckoutDetailses.map((details) => {
+                    if (details.DetaileId == id) {
+                        details.IsDelete = true;
+                    }
+                });
+            } else {
+                checkOutMaster.CheckoutDetailses.splice(checkOutMaster.CheckoutDetailses.indexOf(a => a.DetaileId == id), 1)
+            }
+           // const detailid = $(e).closest('tr').find('td').eq(0).text().trim();
+            //if (id == 0) {
+            //    $(e).closest('tr').remove();
+            //} else {
+            //    $(e).addClass("d-none");
+            //}
+            $(e).closest('tr').remove();
+            previewItem(defaultProduct);
+
+            console.log(checkOutMaster);
+        }
+
+        // price update
+        const priceUpdate = (e) => {
+            //debugger;
+            const price = $(e).val();
+            $("#preview-item-price").text(price);
+
+            const detaileId = $(e).closest('tr').find("td").eq(0).text().trim();
+            const productId = $(e).closest('tr').find("td").eq(1).text().trim();
+
+            // price update by detailid and productid
+            checkOutMaster.CheckoutDetailses.find((item) => {
+                if (item.DetaileId == detaileId && item.ProductId == productId) {
+                    item.Price = price;
+                }
+            });
+            console.log(checkOutMaster.CheckoutDetailses);
+        }
+
+        const postData = (flag) => {
+
+            //$("#item-seting-area tbody tr").each((k, v) => {
+            //    //let DetaileId = $(v).find('td').eq(3).text();
+
+            //    console.log(v);
+            //    let DetaileId = $(v).find('td').eq(0).text().trim();
+            //    let ProductId = $(v).find('td').eq(1).text().trim();
+            //    let Price = $(v).find('td').eq(3).find("input").val();
+            //    let Quantity = 1;
+            //    let MasterId = 0;
+            //    let IsDelete = false;
+
+            //    if (DetaileId != '0') {
+            //        IsDelete = true;
+            //    }
+
+            //    let checkoutDetailsData = {
+            //        DetaileId: DetaileId,
+            //        ProductId: ProductId,
+            //        Price: Price,
+            //        Quantity: Quantity,
+            //        MasterId: MasterId,
+            //        IsDelete: IsDelete
+            //    }
+
+            //    checkOutMaster.CheckoutDetailses.push(checkoutDetailsData);
+
+            //    console.log(checkoutDetailsData);
+            //});
+
+            checkOutMaster.MasterId = $("#MasterId").val();
+            checkOutMaster.Title = $("#Title").val();
+            checkOutMaster.Key = $("#Key").val();
+            checkOutMaster.IsCustomPayment = $("#IsCustomPayment").is(":checked");
+            checkOutMaster.IsCallbackURL = $("#IsCallbackURL").is(":checked");
+            checkOutMaster.CallbackUrl = $("#CallbackUrl").val();
+
+            // by default null
+            checkOutMaster.Address = ""; // $("#Title").val();            
+            checkOutMaster.DateAdded = $("#DateAdded").val();
+            checkOutMaster.DateUpdated = $("#DateUpdated").val();
+            checkOutMaster.IsDelete = false;
+            checkOutMaster.UserId = $("#UserId").val();
+
+            if (flag == 'Create') {
+                //checkOutMaster.DateAdded = new Date();
+                //checkOutMaster.DateUpdated = null;
+            }
+            else if (flag == 'Update') {
+               // checkOutMaster.DateUpdated = new Date();
+            }
+            else if (flag == 'Delete') {
+                checkOutMaster.IsDelete = true;
+            }
+            else {
+                alert("Invalid flag");
+                return;
+            }
+
+            if (checkOutMaster.CheckoutDetailses.length<1) {
+                alert("Select your product");
+                return;
+            }
+
+            //console.log(checkOutMaster);
+
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: '@Url.ActionLink("CheckoutCreate", "Service")',
+                data: { model: checkOutMaster },
+                success: function (result) {
+                    if (result.Success == 1) {
+                        alert("Checkout create/update success!!");
+                        window.location.href = '@Url.ActionLink("Checkout","Service")';
+                    } else {
+                        alert(result.Message);
+                    }
+                },
+                    error: (err) => console.error(err)
+             });
+
+        }
+
+    </script>
+
+}

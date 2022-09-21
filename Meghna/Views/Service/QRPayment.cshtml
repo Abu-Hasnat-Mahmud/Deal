@@ -1,0 +1,35 @@
+﻿@model Deal.Models.QRInfo
+
+@{
+    ViewData["Title"] = "QR Payment";
+   
+}
+
+<div class="container">
+    <h1 class="text-center my-4">QR</h1>
+
+    @if (Model != null)
+    {
+        <div class="d-flex  justify-content-center mt-3">
+            <img class="shadow rounded" src="@String.Format("data:image/png;base64,{0}",Convert.ToBase64String(Model.QRCode))" height="300" width="300" />
+
+        </div>
+        <a target="_blank" class="d-block mt-3 text-bolder text-primary text-center" href="@ViewBag.QRUrl">Click TO PAY</a>
+    }
+
+</div>
+
+
+
+@section Scripts {
+
+    <script>
+
+
+
+
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

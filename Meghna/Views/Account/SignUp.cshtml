@@ -1,0 +1,78 @@
+﻿@model SignUpUserModel
+
+@{
+    ViewData["Title"] = "SingUp";
+}
+
+
+
+<div class="row my-2">
+    <h2 class="text-center mb-2">Sign Up</h2>
+    <div class="col-md-4 col-12"></div>
+    <div class="col-md-4 col-12">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-floating mb-1">
+                <input class="form-control" asp-for="Name">
+                <label asp-for="Name"></label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-1">
+                <input class="form-control" type="date" asp-for="DateOfBirth">
+                <label asp-for="DateOfBirth"></label>
+                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-1">
+                <input class="form-control" asp-for="Address">
+                <label asp-for="Address"></label>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-1">
+                <input class="form-control" asp-for="PhoneNumber">
+                <label asp-for="PhoneNumber"></label>
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-1">
+                <input class="form-control" asp-for="Email">
+                <label asp-for="Email"></label>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-1">
+                <input class="form-control" asp-for="Password">
+                <label asp-for="Password"></label>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-1">
+                <input class="form-control" asp-for="ConfirmPassword">
+                <label asp-for="ConfirmPassword"></label>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>          
+
+            <div class="row">
+                <div class="col-md-4 col-12">
+                    <input type="submit" value="Sign Up" class="btn btn-primary" />
+                </div>
+                <div class="col-md-4 col-12">
+                    <a asp-action="SignIn" asp-controller="Account" class="btn btn-outline-primary"> Sign In</a>
+                </div>
+
+                @*<div class="col-md-4 col-12">
+                    <a asp-action="SignIn" asp-controller="Account"> <i class="fas fa-sign-in-alt text-success fa-2x"></i></a>
+                </div>*@
+                <div class="col-md-4 col-12"></div>
+
+            </div>
+
+        </form>
+    </div>
+    <div class="col-md-4 col-12"></div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

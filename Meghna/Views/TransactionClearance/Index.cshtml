@@ -1,0 +1,88 @@
+﻿@model IEnumerable<TransactionClearanceMaster>
+
+@{
+    ViewData["Title"] = "Transaction Clearance";
+    List<TransactionClearanceMaster> clearanceList = ViewBag.ClientList ?? new List<TransactionClearanceMaster>();
+}
+
+<div class="container">
+    <h1 class="text-center my-4">Transaction Clearance List</h1>
+
+
+    <a asp-action="Create" class="btn btn-info mb-3">Create New</a>
+
+    <table class="table table-hover table-light w-100">
+        <thead class="table-bordered">
+            <tr>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.Title)
+                </th>
+                 <th>
+                    User
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.Currency.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PaymentDate)
+                </th>
+
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in clearanceList)
+            {
+                <tr onclick="GotoEdit('@item.MasterId')">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td>
+                        @*@Html.DisplayFor(modelItem => item.ApplicationUserFor.Email)*@
+                        @item.ApplicationUserFor.Name | @item.ApplicationUserFor.Email
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Currency.Name)
+                    </td>
+                    <td>
+                        @item.PaymentDate.ToShortDateString()
+                       
+                    </td>
+                   
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@section Scripts {
+
+    <script>     
+
+        // goto edit
+        const GotoEdit = (id) => {
+            window.location.href = '@Url.ActionLink("Edit", "TransactionClearance")' + '?id=' + id;
+        }
+
+        $(document).ready(() => {
+          
+            var table = $('.table').DataTable({
+                // lengthChange: false,
+                "scrollX": true,
+
+                buttons: ['copy', 'excel', 'pdf', 'colvis']
+            });
+            table.buttons().container()
+                .appendTo('#example_wrapper .col-md-6:eq(0)');
+
+          
+
+        });
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

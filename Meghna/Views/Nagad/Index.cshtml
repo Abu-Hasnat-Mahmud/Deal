@@ -1,0 +1,148 @@
+﻿
+@{
+    ViewData["Title"] = "Nagad Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <input type="hidden" id="status" value="@ViewBag.status" />
+    <input type="button" id="cancel" name="Clear" value="Clear" />
+    <br />
+    <br />
+    <label>Amount</label>
+    <input type="text" id="amount" />
+    @*<input type="button" id="backUrl" name="backtourl" value="Back to url" />*@
+    <input type="button" id="backUrl" value="Pay With Nagad Live" onclick="paywithNagad(false)" />
+    <input type="button" id="backUrl" value="Pay With Nagad Sandbox" onclick="paywithNagad(true)" />
+    
+    <br />
+    <br />
+    <br />
+    <label>RefferenceId</label>
+    <input type="text" id="refferenceid" />
+    <input type="button" id="checkpayment" value="Check Payment status Live" onclick="checkPayment(false)" />
+    <input type="button" id="checkpayment" value="Check Payment status Sandbox" onclick="checkPayment(true)" />
+    <div id="paymentstatusdiv">
+    </div>
+
+
+    <br />
+    <br />
+    <br />
+    <label>OrderId</label>
+    <input type="text" id="refOrderid" />
+    <label>RefferenceId</label>
+    <input type="text" id="refReffid" />
+    <label>Amount</label>
+    <input type="text" id="refAmount" />
+    <input type="button" id="refund" value="Refund Live" onclick="refund(false)" />
+    <input type="button" id="refund" value="Refund Sandbox" onclick="refund(true)" />
+
+</div>
+@section Scripts{
+
+    <script>
+
+         function paywithNagad(isSandbox) {
+
+                var amount = $("#amount").val();
+                $.ajax({
+                    url: '@Url.Action("PayWithNagad", "Nagad")',
+                    data: { amount: amount, isSandBox: isSandbox }, //use id here
+                    type: 'GET',
+                    contentType: 'application/json;',
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.callbackurl!=null) {
+                            var url = result.callbackurl;
+                            window.open(url, '_blank');
+                        }
+                        else {
+                            alert(result.error);
+                            console.log(result.error);
+                        }
+
+                    },
+
+                    error: function (result) {
+                        alert('failed')
+                        console.log(result);
+                    }
+                });
+        }
+
+         function checkPayment(isSandbox) {
+                var reffid = $("#refferenceid").val();
+               // alert(reffid);
+                $.ajax({
+                    url: '@Url.Action("CheckPayment", "Nagad")',
+                    data: { paymentRefId: reffid, isSandbox: isSandbox }, //use id here
+                    type: 'GET',
+                    contentType: 'application/json;',
+                    dataType: 'json',
+                    success: function (result) {
+                        $("#paymentstatusdiv").empty();
+                        if (result.model != null) {
+                            var li =
+                                '<dl style="text-align:center">merchantId: <dt class="row col-md-8">' + result.model.MerchantId + '</dt>merchantMobileNo:<dt class="row col-md-8" >' + result.model.MerchantMobileNo + '</dt>orderDateTime:<dt class="row col-md-8">' + result.model.OrderDateTime + '</dt>orderId:<dt class="row col-md-8">' + result.model.OrderId + '</dt>paymentRefId:<dt class="row col-md-8">' + result.model.PaymentRefId + '</dt>issuerPaymentDateTime:<dt class="row col-md-8">' + result.model.IssuerPaymentDateTime + '</dt>issuerPaymentReferenceNo:<dt class="row col-md-8">' + result.model.IssuerPaymentReferenceNo + '</dt>additionalMerchantInfo:<dt class="row col-md-8">' + result.model.AdditionalMerchantInfo + '</dt>amount:<dt class="row col-md-8">' + result.model.Amount +'</dt>clientMobileNo:<dt class="row col-md-8">'+result.model.ClientMobileNo+'</dt></dl > ';
+                            $("#paymentstatusdiv").append(li);
+                        }
+                        else {
+                            alert(result.error);
+                            console.log(result.error);
+                        }
+
+                    },
+
+                    error: function (result) {
+                        alert('failed')
+                        console.log(result)
+                    }
+                });
+            }
+
+
+           function refund(isSandbox) {
+                var refOrderid = $("#refOrderid").val();
+                var refReffid = $("#refReffid").val();
+                var refAmount = $("#refAmount").val();
+
+                $.ajax({
+                    url: '@Url.Action("Refund", "Nagad")',
+                    data: { orderid: refOrderid, paymentRefId: refReffid, amount: refAmount, isSandbox: isSandbox }, //use id here
+                    type: 'GET',
+                    contentType: 'application/json;',
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.model != null) {
+                            var li =
+                                '<dl style="text-align:center">merchantId: <dt class="row col-md-8">' + result.model.merchantId + '</dt>merchantMobileNo:<dt class="row col-md-8" >' + result.model.merchantMobileNo + '</dt>orderDateTime:<dt class="row col-md-8">' + result.model.orderDateTime + '</dt>orderId:<dt class="row col-md-8">' + result.model.orderId + '</dt>paymentRefId:<dt class="row col-md-8">' + result.model.paymentRefId + '</dt>issuerPaymentDateTime:<dt class="row col-md-8">' + result.model.issuerPaymentDateTime + '</dt>issuerPaymentReferenceNo:<dt class="row col-md-8">' + result.model.issuerPaymentReferenceNo + '</dt>additionalMerchantInfo:<dt class="row col-md-8">' + result.model.additionalMerchantInfo + '</dt>amount:<dt class="row col-md-8">' + result.model.amount +'</dt>clientMobileNo:<dt class="row col-md-8">'+result.model.clientMobileNo+'</dt></dl > ';
+                            $("#paymentstatusdiv").append(li);
+                        }
+                        else {
+                            alert(result.error);
+                            console.log(result.error)
+                        }
+
+                    },
+
+                    error: function (result) {
+                        alert('failed');
+                        console.log(result)
+                    }
+                });
+            }
+
+        $(document).ready(function () {
+            //var status = $("#status").val();
+
+            //if (status!=null) {
+            //    alert(status);
+            //}
+            $("#cancel").click(function () {
+                alert("Canceled");
+            });
+        });
+
+    </script>
+}

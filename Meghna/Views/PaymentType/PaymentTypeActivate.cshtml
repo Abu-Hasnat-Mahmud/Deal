@@ -1,0 +1,95 @@
+﻿@model IEnumerable<PayTypeViewModel>
+
+@{
+    ViewData["Title"] = "Payment Types";
+    List<PayType> payTypeList = ViewBag.PayTypes;
+}
+<style>
+
+    .Box-root {
+        box-sizing: border-box;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+    }
+</style>
+
+<div class="container">
+
+    <h4 class="text-center mt-3 mb-5">Activate Payment Method</h4>
+
+    @if (Model != null)
+    {
+        <div class="row g-2  row-cols-1 rounded row-cols-md-6 justify-content-center">
+            @foreach (var item in Model)
+            {
+                <div class="shadow mb-3 mx-2 pt-3 text-center row align-items-center justify-content-center " style="width:150px">
+                    <img src="~/images/@item.Icon" style="height: auto; width: 100px; cursor: pointer" />
+                    <p>@item.PayTypeName</p>
+                    <div class="form-check form-switch d-flex justify-content-center">
+                        @if (item.IsActive)
+                        {
+                            @if (item.IsUsing)
+                            {
+                                <input data-id="@item.PayTypeId" class="form-check-input" type="checkbox" checked role="switch">
+                            }
+                            else
+                            {
+                                <input data-id="@item.PayTypeId" class="form-check-input" type="checkbox" role="switch">
+                            }
+                        }
+                        else
+                        {
+                            <input data-id="@item.PayTypeId" class="form-check-input" type="checkbox" disabled role="switch">
+                        }
+
+
+                        @*<label class="form-check-label" for="@item.PayTypeName">Activate</label>*@
+                    </div>
+                </div>
+            }
+
+
+        </div>
+    }
+
+
+
+</div>
+
+@section Scripts {
+
+    <script>
+
+
+        $(document).ready(function () {
+
+            //$("input[type='checkbox']").click(() => {
+            $("input:checkbox").click(function () {
+                //console.log($(this).is(':checked'));
+                //console.log($(this).data('id'));
+
+                const isUsing = $(this).is(':checked');
+                const payTypeId = $(this).data('id');
+                $.ajax({
+                    type: "POST",
+                    dataType: "json",
+                    url: '@Url.ActionLink("CreatePaymentTypeControl", "PaymentType")',
+                    data: { isUsing, payTypeId },
+                    success: function (result) {
+                        if (!result.isSuccess) {
+                            alert(result.message);
+                            $(this).prop("checked", !isActive)
+                        }
+                    },
+                 });
+            })
+        });
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

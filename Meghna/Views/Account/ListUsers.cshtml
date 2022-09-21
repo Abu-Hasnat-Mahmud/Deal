@@ -1,0 +1,63 @@
+﻿@model IEnumerable<EditUserViewModel>
+
+@{
+    ViewBag.Title = "All Users";
+}
+
+
+<div class="container">
+    <h3 class="text-center mt-2 mb-4">All User Roles</h3>
+     <table class="table table-hover table-striped w-100">
+        <thead class="fw-bold border">
+            <tr>
+                <td>User Name</td>
+                <td>User Email</td>
+                <td>User Roles</td>
+                <td>Action</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.UserName</td>
+                    <td>@user.Email</td>
+                    <td>
+                        @foreach (var role in user.Roles)
+                        {
+                            <span class="badge badge-pill bg-primary">@role</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="EditUser" asp-route-id="@user.Id" class="btn btn-success btn-sm">Manage Role</a>
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+
+@section Scripts {
+
+    <script>
+
+        $(document).ready(() => {
+           
+            var table = $('.table').DataTable({
+                // lengthChange: false,
+                "scrollX": true,
+                buttons: ['copy', 'excel', 'pdf', 'colvis']
+            });
+            table.buttons().container()
+                .appendTo('#example_wrapper .col-md-6:eq(0)');
+
+           
+        });
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

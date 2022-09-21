@@ -1,0 +1,117 @@
+﻿@model Deal.Models.PaymentTransaction
+
+@{
+    ViewData["Title"] = "Payment Result";
+    Layout = "_EmbedLayout";
+    var checkout = Model.CheckoutMaster;
+}
+
+
+@if (Model != null)
+{
+    if (Model.Status.ToLower() == "success")
+    {
+        <div class="row justify-content-center mt-3">
+            <div class="col-12 col-md-4 d-flex justify-content-center align-items-center flex-column border p-4">
+                <h1 class="text-center text-success"><i class="far fa-check-circle"></i></h1>
+                <br />
+                <p>Trans. Id: @Model.Order_Id</p>
+                <p>Amount: @Model.Amount-@Model.Currency.Name</p>
+                <p>Date: @Model.PaymentDate.ToShortDateString()</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>@ViewBag.transactionId</p>
+    }
+
+}
+else
+{
+    <h1 class="text-center text-danger"><i class="fas fa-exclamation-triangle"></i></h1>
+    <h1 class="text-center text-danger">Payment not Completed</h1>
+}
+
+@if (Model.CheckoutMaster != null)
+{
+    @section Scripts
+{
+        <script>
+        @*let checkout =@Html.Raw(Json.Serialize(Model.CheckoutMaster)); //Model.CheckoutMaster;
+        if (checkout != null && checkout.IsCallbackURL) {
+            setTimeout(()=>{
+                window.location.href = `@Model.CheckoutMaster.CallbackUrl/@Model.TransactionId`;
+            }, 3000);
+
+        }*@
+
+        if (@Model.CheckoutMaster!= null) {
+            setTimeout(()=>{
+                window.location.href = `@Model.CheckoutMaster.CallbackUrl/@Model.TransactionId`;
+            }, 3000);
+        }
+        </script>
+
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }
+}
+
+
+
+
+
+
+
+@*<div class="d-none">
+        <h4>CallbackResponseObject</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.order_id)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.order_id)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.payment_ref_id)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.payment_ref_id)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.status)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.status)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.status_code)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.status_code)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.message)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.message)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.payment_dt)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.payment_dt)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.issuer_payment_ref)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.issuer_payment_ref)
+            </dd>
+        </dl>
+    </div>
+    <div class="d-none">
+        @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+        <a asp-action="Index">Back to List</a>
+    </div>*@

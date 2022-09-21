@@ -1,0 +1,100 @@
+﻿@model CustomPayment
+@inject Deal.Services.IUserService userService
+
+@{
+    ViewData["Title"] = "Product";
+}
+
+
+<style>
+    #output_image {
+        width: 120px;
+        height: 100px;
+        /*border-color: lightgray;*/
+        border: 1px dashed lightgray;
+    }
+</style>
+
+<style media="screen and (max-width:730px)">
+    #output_image {
+        width: 70px;
+        height: 50px;
+    }
+</style>
+
+<div class="container mt-5">
+
+    @if (ViewBag.Success)
+    {
+        <h1 class="text-center">Payment Success</h1>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-3 col-12"></div>
+            <div class="col-md-6 col-12">
+                <form asp-action="Create" enctype="multipart/form-data" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input asp-for="Id" value="0" type="hidden" />
+                    <input asp-for="TransactionId" value="@Model.TransactionId" type="hidden" />
+                    <input asp-for="PaymentDate" value="@DateTime.Now" type="hidden" />
+
+
+                    <div class="form-group mb-3">
+                        <label asp-for="BankName" class="control-label"></label>
+                        <input asp-for="BankName" class="form-control" />
+                        <span asp-validation-for="BankName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="File"></label>
+                        <input asp-for="File">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="AmountPaid" class="control-label"></label>
+                        <div class="input-group ">
+                            <input asp-for="AmountPaid" class="form-control" />
+                            <span class="input-group-append">
+                                <select asp-items="ViewBag.Currency" asp-for="CurrId" class="form-select">
+                                </select>
+                            </span>
+                        </div>
+                        <span asp-validation-for="AmountPaid" class="text-danger"></span>
+                        <span asp-validation-for="CurrId" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <input type="submit" value="Submit" class="btn btn-primary" />
+                    </div>
+
+                </form>
+            </div>
+            <div class="col-md-3 col-12"></div>
+        </div>
+    }
+
+
+</div>
+
+
+
+
+
+@section Scripts {
+
+    <script>
+
+        function preview_image(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('output_image');
+                output.src = reader.result;
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

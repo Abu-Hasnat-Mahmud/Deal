@@ -1,0 +1,245 @@
+﻿@model PaymentTransactionDashboard
+
+@{
+    ViewData["Title"] = "Transaction";
+    List<PaymentTransactionDashboard> transactionList = ViewBag.TransactionList ?? new List<PaymentTransactionDashboard>();
+}
+
+
+<style>
+    .btnHover {
+        visibility: hidden;
+    }
+
+    table tr:hover .btnHover {
+        visibility: visible;
+    }
+
+    .btnHover img {
+        display: inline-block;
+        width: 20px;
+    }
+</style>
+
+
+<div class="container">
+
+    <h3 class="text-center my-4">Transaction</h3>
+
+    <form method="post" asp-action="TransactionSuspend" asp-controller="TransactionClearance">
+        <div class="row justify-content-lg-center my-2">
+            <div class="col-md-3 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">User</span>
+                    </div>
+                    @Html.DropDownList("UserId", null, "--All--", htmlAttributes: new { @class = "form-select" })
+                    @*<select asp-items="ViewBag.UserId" id="UserId" name="UserId" class="form-select">
+                            <option value="">All</option>
+                        </select>*@
+                </div>
+            </div>
+            <div class="col-md-3 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">From Date</span>
+                    </div>
+                    @*<input autocomplete="off" class="form-control text-center FromDate" id="FromDate" name="FromDate" placeholder="Select From Date " type="text" value="">*@
+                    @Html.TextBox("FromDate", null, new { @class = "form-control text-center FromDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "FromDate" })
+                </div>
+            </div>
+
+            <div class="col-md-3 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">To Date</span>
+                    </div>
+                    @Html.TextBox("ToDate", null, new { @class = "form-control text-center ToDate", @placeholder = "Select To Date ", @autocomplete = "off", name = "ToDate" })
+                </div>
+            </div>
+
+            <div class="col-md-2 col-12">
+                <input type="submit" id="btnLoad" value="Load" class="btn btn-success btn-block rounded" />
+            </div>
+
+        </div>
+
+    </form>
+
+
+
+
+    <div>
+        <table class="table table-hover w-100" id="tblAll">
+            <thead>
+                <tr>
+                    <th class="d-none">Id</th>
+                    <th>Deal User</th>
+                    <th class="text-center">Amount</th>
+
+                    <th>Invoice No</th>
+                    <th>Client</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in transactionList)
+                {
+                    <tr>
+                        <td class="d-none">@item.TransactionId</td>
+                        <td>@item.UserEmailFor</td>
+                        <td class="text-center">
+                            <span class="fw-bold ">@item.Amount</span> - @item.Currency
+
+                            @if (item.Status.ToLower() == "suspend")
+                            {
+                                <span class="badge bg-danger">@item.Status</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">@item.Status</span>
+                            }
+
+                            @if (item.IsClearTrans)
+                            {
+                                <span class="text-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Transaction Completed">
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                </span>
+                            }
+                        </td>
+                        <td>@item.Order_Id</td>
+                        <td>@item.Email</td>
+                        <td>
+                            <span>
+                                @item.PaymentDate.ToShortDateString(), @item.PaymentDate.ToShortTimeString()
+                                @if(!item.IsClearTrans)
+                                {
+                                    <span class="@item.TransactionId">
+
+                                        @if(item.Status.ToLower() == "suspend")
+                                        {
+                                            <button class="btnHover btn btn-primary btn-sm" onclick="UpdateStatus('@item.TransactionId','Success')" data-bs-toggle="tooltip" data-bs-placement="top" title="Success Trasaction">
+                                                <i class="fas fa-clipboard-check"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btnHover btn btn-danger btn-sm" onclick="UpdateStatus('@item.TransactionId','Suspend')" data-bs-toggle="tooltip" data-bs-placement="top" title="Suspend Trasaction">
+                                                <i class="fas fa-ban"></i>
+                                            </button>
+                                        }
+                                    </span>
+                                }
+                            </span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot class="table-bordered">
+                <tr>
+                    <th class="d-none"></th>
+                    <th class="text-end">Total Amount - </th>
+                    <th class="text-center"><span id="ttlAmount">@transactionList.Sum(a => a.Amount)</span></th>
+
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+
+
+
+
+</div>
+
+@section Scripts {
+
+
+
+    <script>
+
+        const UpdateStatus = (trId, status) => {
+            //debugger;
+            if (!confirm(`Are you sure to ${status} the trunsaction??`)) {
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                async: true,
+                url: '@Url.ActionLink("UpdateStatus", "TransactionClearance")',
+                data: { transactionId: trId, status },
+                success: (result) => {
+                    if (result.isSuccess) {
+                        if (status == "Success") {
+                            const btn = `<button class=" btn btn-danger btn-sm" onclick="UpdateStatus('${trId}','Suspend')" data-bs-toggle="tooltip" data-bs-placement="top" title="Suspend Trasaction">
+                                            <i class="fas fa-ban"></i>
+                                        </button>`;
+                            //$(`.${trId}`).html("");
+                            $(`.${trId}`).html(btn);
+
+                            $(`.${trId}`).closest("tr").find(".badge").text(status);
+                            $(`.${trId}`).closest("tr").find(".badge").removeClass("bg-danger");
+                            $(`.${trId}`).closest("tr").find(".badge").addClass("bg-success");
+                        }
+                        else {
+                            const btn = `<button class=" btn btn-primary btn-sm" onclick="UpdateStatus('${trId}','Success')" data-bs-toggle="tooltip" data-bs-placement="top" title="Success Trasaction">
+                                            <i class="fas fa-clipboard-check"></i>
+                                        </button>`;
+
+                           // $(`.${trId}`).html("");
+                            $(`.${trId}`).html(btn);
+
+                            $(`.${trId}`).closest("tr").find(".badge").text(status);
+                            $(`.${trId}`).closest("tr").find(".badge").removeClass("bg-success");
+                            $(`.${trId}`).closest("tr").find(".badge").addClass("bg-danger");
+
+                        }
+
+
+
+
+                    } else {
+                        alert(result.message)
+                    }
+                },
+                error:(err)=> {
+
+                    console.error(err);
+                }
+            });
+        }
+
+        //$(function () {
+        //    $('[data-bs-toggle="tooltip"]').tooltip();
+        //})
+
+        $(document).ready(() => {
+
+
+
+            $("#FromDate, #ToDate").datepicker({
+                dateFormat: "dd-M-y",
+                changeMonth: true,
+                changeYear: true
+            });
+
+            var table = $('#tblAll').DataTable({
+                "scrollX": true,
+
+                buttons: ['copy', 'excel', 'pdf', 'colvis']
+            });
+            table.buttons().container()
+                .appendTo('#example_wrapper .col-md-6:eq(0)');
+        });
+
+
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

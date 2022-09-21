@@ -1,0 +1,49 @@
+﻿@model CheckoutMaster
+
+@{
+    ViewData["Title"] = "Pay With Link";
+    Layout = "_EmbedLayout";
+}
+
+
+<partial name="_PreviewCheckout" model="@Model" />
+
+
+@section Scripts{
+<script>
+    
+    $(document).ready(() => {
+
+        $("#go-pay").click(() => {
+            const recPayment = {
+                Key: $("#key").val().trim(),
+                UserEmail: $("#UserEmail").val().trim(),
+                Address: $("#Address").val().trim()
+            }
+
+            $.ajax({
+                url: '@Url.ActionLink("ChekoutPaymentReceive","Payment")',
+                method: 'POST',
+                dataType: 'json',
+                data: { model: recPayment },
+                success: (result) => {
+                    if (result.success) {
+                        open(result.link);
+                    } else {
+                        alert(result.message);
+                    }                   
+                },
+                error: (err) => {
+                    alert("error");
+                    console.error(err);
+                }
+            });
+        });
+    });
+</script>
+   
+}
+
+
+
+

@@ -1,0 +1,84 @@
+﻿@model PayType
+
+@{
+    ViewData["Title"] = "Payment Types";
+    List<PayType> payTypeList = ViewBag.PayTypes;
+}
+
+
+<div class="container">
+
+    <h1 class="text-center my-4">Payment Types</h1>
+
+
+    <a asp-action="Create" class="btn btn-info mb-3">Create New</a>
+
+    <table class="table table-hover table-light w-100">
+        <thead class="table-bordered">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.PayTypeName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Icon)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IsActive)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in payTypeList)
+            {
+                <tr onclick="GotoEdit('@item.PayTypeId')">
+                    <td>
+                        <div class="d-flex  justify-content-evenly">
+                            <p>@Html.DisplayFor(modelItem => item.PayTypeName)</p>
+                            @*<img src="@item.Image" class="product-img" alt="Product Image" />*@
+                            @*<div class="Box-root" style="background-image: url(..@item.Image);"></div>*@
+                        </div>
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Icon)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IsActive)
+                    </td>
+                   
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+
+    <script>
+        // goto edit
+        const GotoEdit = (id) => {
+            window.location.href = '@Url.ActionLink("Edit", "PaymentType")' + '?id=' + id;
+        }
+
+        $(document).ready(() => {
+
+            $("#FromDate, #ToDate").datepicker({
+                dateFormat: "dd-M-y",
+                changeMonth: true,
+                changeYear: true
+            });
+            var table = $('.table').DataTable({
+                // lengthChange: false,
+                "scrollX": true,
+
+                buttons: ['copy', 'excel', 'pdf', 'colvis']
+            });
+            table.buttons().container()
+                .appendTo('#example_wrapper .col-md-6:eq(0)');
+
+        });
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

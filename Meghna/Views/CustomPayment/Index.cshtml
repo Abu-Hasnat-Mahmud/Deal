@@ -1,0 +1,142 @@
+﻿@model CustomPayment
+
+@{
+    ViewData["Title"] = "Custom Payment";
+    List<CustomPayment> paymentList = ViewBag.PendingCustomPayments;
+}
+
+
+<div class="container">
+
+    <h1 class="text-center my-4">Custom Payment</h1>
+
+
+    <table class="table table-hover table-light w-100">
+        <thead class="table-bordered">
+            <tr>
+                <th>
+                    Email
+                </th>
+                <th>
+                    Payable
+                </th>
+                <th>
+                    Paid
+                </th>
+                <th>
+                    Date
+                </th>
+                <th>
+                    Bank
+                </th>
+                <th>
+                    Docs
+                </th>
+                <th>
+                    
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in paymentList)
+            {
+                <tr >
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PaymentTransaction.Email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PaymentTransaction.Amount) -  @Html.DisplayFor(modelItem => item.PaymentTransaction.Currency.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AmountPaid) -  @Html.DisplayFor(modelItem => item.Currency.Name)
+                    </td>
+
+                    <td>
+                        @item.PaymentDate.ToShortDateString()
+
+                        @*@Html.DisplayFor(modelItem => item.PaymentDate.ToShortDateString())*@
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BankName)
+                    </td>
+                    <td>
+                        <a  data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="setPreviewSrc('@item.FilePath')" class="link-success">Files</a>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-success" onclick="docCheck(this,@item.Id, true)">Accept</button>
+                        <button class="btn btn-sm btn-warning" onclick="docCheck(this,@item.Id,false)">Reject</button>
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">           
+            <div class="modal-body">
+                <iframe style="width:100%" id="preview-doc" src=""  height='550' allowfullscreen webkitallowfullscreen></iframe>
+            </div>            
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+
+    <script>
+
+
+        // goto edit
+        @*const GotoEdit = (id) => {
+            window.location.href = '@Url.ActionLink("Edit", "Product")' + '?id=' + id;
+        }*@
+
+        
+
+        const setPreviewSrc = (url) => {
+            $("#preview-doc").attr('src', url);
+        }
+        const docCheck = (element,cPayId, bool) => {
+            
+            $.ajax({
+                url: '@Url.ActionLink("AcceptDocument", "CustomPayment")',
+                method: 'get',
+                data: { id: cPayId, accept: bool },
+                success: (data) => {
+                    if (data.success) {
+                        $(element).closest('tr').remove();
+                    } else {
+                        alert(data.message);
+                    }
+                },
+                error: (err) => {
+                    console.error(err);
+                }
+
+            })
+        }
+
+        $(document).ready(() => {
+
+            var table = $('.table').DataTable({
+                // lengthChange: false,
+                "scrollX": true,
+
+                buttons: ['copy', 'excel', 'pdf', 'colvis']
+            });
+            table.buttons().container()
+                .appendTo('#example_wrapper .col-md-6:eq(0)');
+
+          
+        });
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

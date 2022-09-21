@@ -1,0 +1,82 @@
+﻿@model IEnumerable<IdentityRole>
+
+@{
+    ViewBag.Title = "All Roles";
+}
+
+
+<div class="container mt-2">
+    <h1 class="text-center">Role Management</h1>
+    <div class="text-center">
+        <h1 class="badge badge-dark">All Roles</h1>
+    </div>
+    <a class="btn btn-success mb-3" style="width:auto" asp-action="CreateRole"
+       title="Add A New Role"><i class="fa fa-plus"></i></a>
+
+    @if (Model.Any())
+    {
+
+
+        <table class="table table-hover table-striped w-100">
+            <thead>
+                <tr>
+                    <td>Role ID</td>
+                    <td>Role Name</td>
+                    <td>Action</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var role in Model)
+                {
+                    <tr>
+                        <td>@role.Id</td>
+                        <td>@role.Name</td>
+                        <td>
+                            <a style="color:white;" asp-controller="Administration" asp-action="EditRole"
+                               asp-route-id="@role.Id" class="btn btn-sm btn-warning" title="Edit Role"><i class="fa fa-edit"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-header">
+                No roles created yet
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">
+                    Use the button below to create a role
+                </h5>
+                <a class="btn btn-primary" style="width:auto"
+                   asp-controller="Account" asp-action="CreateRole">
+                    Create Role
+                </a>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+
+    <script>
+
+        $(document).ready(() => {
+
+            var table = $('.table').DataTable({
+                // lengthChange: false,
+                "scrollX": true,
+                buttons: ['copy', 'excel', 'pdf', 'colvis']
+            });
+            table.buttons().container()
+                .appendTo('#example_wrapper .col-md-6:eq(0)');           
+        });
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

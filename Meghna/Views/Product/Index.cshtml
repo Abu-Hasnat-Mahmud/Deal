@@ -1,0 +1,94 @@
+﻿@model Product
+
+@{
+    ViewData["Title"] = "Product";
+    List<Product> productList = ViewBag.ProductList;
+}
+<style>
+
+    .Box-root {
+        box-sizing: border-box;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+    }
+</style>
+
+<div class="container">
+
+    <h1 class="text-center my-4">Product</h1>
+
+
+    <a asp-action="Create" class="btn btn-info mb-3">Create New</a>
+
+    <table class="table table-hover table-light w-100">
+        <thead class="table-bordered">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Price)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Currency.Name)
+                <th>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in productList)
+            {
+                <tr onclick="GotoEdit('@item.ProductId')">
+                    <td>
+                        <div class="d-flex  justify-content-evenly">
+                            <p>@Html.DisplayFor(modelItem => item.Name)</p>
+                            @*<img src="@item.Image" class="product-img" alt="Product Image" />*@
+                            <div class="Box-root" style="background-image: url(..@item.Image);"></div>
+                        </div>
+
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Price)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Currency.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+
+    <script>
+
+        // goto edit
+        const GotoEdit = (id) => {
+            window.location.href = '@Url.ActionLink("Edit", "Product")' + '?id=' + id;
+        }
+
+        $(document).ready(() => {
+
+            var table = $('.table').DataTable({
+                // lengthChange: false,
+                "scrollX": true,
+                buttons: ['copy', 'excel', 'pdf', 'colvis']
+            });
+            table.buttons().container()
+                .appendTo('#example_wrapper .col-md-6:eq(0)');
+        });
+
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

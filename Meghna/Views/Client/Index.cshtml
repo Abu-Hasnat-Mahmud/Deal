@@ -1,0 +1,80 @@
+﻿@model IEnumerable<Deal.Models.Client>
+
+@{
+    ViewData["Title"] = "Client";
+    List<Client> clientList = ViewBag.ClientList;
+}
+
+<div class="container">
+    <h1 class="text-center my-4">Client</h1>
+
+
+    <a asp-action="Create" class="btn btn-info mb-3">Create New</a>
+
+    <table class="table table-responsive-md table-hover table-light w-100">
+        <thead class="table-bordered">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Email)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Phone)
+                <th>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in clientList)
+            {
+                <tr onclick="GotoEdit('@item.ClientId')">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Phone)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@section Scripts {
+
+    <script>     
+
+        // goto edit
+        const GotoEdit = (id) => {
+            window.location.href = '@Url.ActionLink("Edit", "Client")' + '?id=' + id;
+        }
+
+        $(document).ready(() => {
+
+            var table = $('.table').DataTable({
+                // lengthChange: false,
+                "scrollX": true,
+
+                buttons: ['copy', 'excel', 'pdf', 'colvis']
+            });
+            table.buttons().container()
+                .appendTo('#example_wrapper .col-md-6:eq(0)');
+
+           
+
+        });
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

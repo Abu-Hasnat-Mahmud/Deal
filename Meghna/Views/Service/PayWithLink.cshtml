@@ -1,0 +1,82 @@
+﻿@model PaymentLink
+
+@{
+    ViewData["Title"] = "Pay With Link";
+    Layout = "_EmbedLayout";
+}
+
+<div class="row row-cols-1 justify-content-center  mx-5 my-3 ">
+    <div class="col-md-4 col-12 p-4  shadow rounded-2" style="background-color:ghostwhite;">
+        @*<form method="post" asp-controller="Payment" asp-action="QRPaymentReceive">*@
+        <div asp-validation-summary="ModelOnly"></div>
+        <input type="hidden" asp-for="Key" value="@ViewBag.Key" />
+
+        <div class="form-group my-2">
+            <h6>@Model?.Title</h6>
+            <h1 class="text-center">@Model?.Amount @Model?.Currency?.Name</h1>
+        </div>
+
+        <div class="form-group my-2">
+            <label for="UserEmail" class="control-label"></label>
+            <div class="input-group">
+                <input class="form-control" id="UserEmail" name="UserEmail" placeholder="email" />
+                <span for="UserEmail" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group my-2">
+            <label for="Address" class="control-label"></label>
+            <textarea id="Address" name="Address" class="form-control" placeholder="address"></textarea>
+            <span for="Address" class="text-danger"></span>
+        </div>
+
+        <div class="form-group my-2 text-center">
+            <input type="button" id="go-pay" class="btn btn-primary" value="GO PAY" />
+        </div>
+        @*</form>*@
+
+    </div>
+
+
+</div>
+
+
+
+
+
+@section Scripts{
+    <script>
+
+    $(document).ready(() => {
+
+        $("#go-pay").click(() => {
+            const recPayment = {
+                Key: $("#Key").val(),
+                //Amount: $("#Amount").val().trim(),
+                //CurrId: $("#CurrId").val(),
+                UserEmail: $("#UserEmail").val().trim(),
+                Address: $("#Address").val().trim()
+            }
+            //console.log(recPayment);
+            $.ajax({
+                url: '@Url.ActionLink("LinkPaymentReceive","Payment")',
+                method: 'POST',
+                dataType: 'json',
+                data: { model: recPayment },
+                success: (result) => {
+                    if (result.success) {
+                        location.href = result.link;
+                    } else {
+                        alert(result.message);
+                    }
+                },
+                error: (err) => {
+                    alert("error");
+                    console.error(err);
+                }
+            });
+        });
+    });
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

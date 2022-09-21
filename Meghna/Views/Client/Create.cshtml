@@ -1,0 +1,99 @@
+﻿@model Deal.Models.Client
+@inject Deal.Services.IUserService userService
+
+@{
+    ViewData["Title"] = "Client";
+}
+<div class="container">
+    <h1>Client</h1>
+
+
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @if (Model == null) // for create new link
+                {
+                    <input asp-for="ClientId" value="0" type="hidden" />
+                    <input asp-for="DateAdded" value="@DateTime.Now" type="hidden" />
+                    <input asp-for="DateUpdated" type="hidden" />
+
+                    <input asp-for="UserId" value="@userService.GetUserId()" type="hidden" />
+                }
+                else // for update link
+                {
+                    <input asp-for="ClientId" type="hidden" />
+                    <input asp-for="DateAdded" type="hidden" />
+
+                    <input asp-for="DateUpdated" value="@DateTime.Now" type="hidden" />
+                    <input asp-for="UserId" type="hidden" />
+                }
+
+                <div class="form-group mb-3">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Phone" class="control-label"></label>
+                    <input asp-for="Phone" class="form-control" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Description" class="control-label"></label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+
+
+                <div class="form-group mb-3">
+
+                    @if (Model != null)
+                    {
+                        <input type="submit" value="Update" class="btn btn-warning" />
+                        <button type="submit" name="isDelete" value="true" class="btn btn-danger">Delete</button>
+                    }
+                    else
+                    {
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    }
+                    <a asp-action="Index" class="btn btn-outline-info">Back to List</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script>
+
+        $(document).ready(() => {
+
+            var table = $('.table').DataTable({
+                // lengthChange: false,
+                "scrollX": true,
+
+                buttons: ['copy', 'excel', 'pdf', 'colvis']
+            });
+            table.buttons().container()
+                .appendTo('#example_wrapper .col-md-6:eq(0)');
+
+            $(".table").css("width", "100%");
+
+        });
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

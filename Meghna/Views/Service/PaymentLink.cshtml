@@ -1,0 +1,111 @@
+﻿@model IEnumerable<Deal.Models.PaymentLink>
+
+@{
+    ViewData["Title"] = "PaymentLink";
+    
+}
+
+<div class="container">
+    <h1 class="text-center my-4">Payment Link</h1>
+
+
+    <a asp-action="PaymentLinkCreate" class="btn btn-info mb-3">Create New</a>
+
+    <table class="table table-hover table-light w-100">
+        <thead class="table-bordered">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Title)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Amount)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Currency)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IsCustomPayment)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IsInactive)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.CustomLink)
+                </th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td>
+                            <a href="#" class=" font-weight-bold text-decoration-none" onclick="GotoEdit(@item.LinkId)"> @item.Title</a>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Amount)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Currency.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IsCustomPayment)
+                        </td>
+                         <td>
+                            @Html.DisplayFor(modelItem => item.IsInactive)
+                        </td>
+
+                        <td>
+                            <span>
+                                <a href="@item.CustomLink" title="GO TO PAYMENT" target="_blank" class="link-primary"><i class="fas fa-link"></i></a>
+                            </span>
+                            <span class="ml-5">
+                                <a onclick="CopyClipboard('@item.CustomLink')" title="COPY LINK" class="link-success"><i class="fas fa-copy"></i></a>
+                            </span>
+
+                        </td>
+                    </tr>
+                }
+            }
+
+        </tbody>
+    </table>
+</div>
+
+
+
+@section Scripts {
+
+    <script>
+        // copy link by click
+        const CopyClipboard = (url) => {
+            navigator.clipboard.writeText(url);
+            /* Alert the copied text */
+            alert("Copied the Link: " + url);
+        }
+
+        // goto edit
+        const GotoEdit = (id) => {
+            window.location.href = '@Url.ActionLink("PaymentLinkEdit", "Service")' + '?id=' + id;
+        }
+
+        $(document).ready(() => {
+
+            var table = $('.table').DataTable({
+                // lengthChange: false,
+                "scrollX": true,
+                buttons: ['copy', 'excel', 'pdf', 'colvis']
+            });
+            table.buttons().container()
+                .appendTo('#example_wrapper .col-md-6:eq(0)');
+        });
+
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

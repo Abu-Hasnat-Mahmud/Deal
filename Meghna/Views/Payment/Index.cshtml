@@ -1,0 +1,81 @@
+﻿@{
+    ViewData["Title"] = "Payment";
+    List<PayType> payTypes = ViewBag.PayTypes;
+    Layout = "_EmbedLayout";
+}
+
+
+<div class="d-flex justify-content-center mt-4">
+
+        <div class="shadow p-4 rounded  row row-cols-2 row-cols-md-4 justify-content-center">
+            @if (payTypes != null)
+            {
+                foreach (var item in payTypes)
+                {
+                    <div class="col d-flex align-items-center justify-content-center p-2">
+                        <div class="shadow rounded p-2 m-4" >
+                            <img style="height:50px; width:auto; cursor:pointer"   src="~/images/@item.Icon" onclick="Payment('@item.PayTypeId','@ViewBag.TransactionId')" />
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+               <h2 class="text-center text-warning">Please contact your author. Payment method not activated!!</h2>
+            }
+        </div>
+
+        
+
+
+</div>
+
+
+@section Scripts {
+    <script>
+        const Payment = (typeId, transactionid) => {
+            
+            $.ajax({
+                type: 'GET',
+                url: '@Url.ActionLink("PaymentGateway", "Payment")',
+                data: { payTypeId: typeId, transactionid: transactionid },
+                dataType: 'json',
+                success: (result) => {
+                    if (result.success) {
+                        if (result.ajax) {
+                            GetIntoMerchant(result.link);
+                        } else {
+                             location.href = result.link;
+                        }                       
+                    } else {
+                        alert(result.message);
+                    }
+                },
+                error: (err) => {
+                    console.error(err);
+                }
+            });
+        };
+
+
+        const GetIntoMerchant = (mrUrl) => {
+            $.ajax({
+                type: 'GET',
+                url: mrUrl, //'@Url.ActionLink("PaymentGateway", "Payment")',
+                //data: { payTypeId: typeId, transactionid: transactionid },
+                dataType: 'json',
+                success: (result) => {
+                    if (result.success) {
+                        location.href = result.callbackurl;
+                    } else {
+                        alert(result.message);
+                    }
+                },
+                error: (err) => {
+                    console.error(err);
+                }
+            });
+        }
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

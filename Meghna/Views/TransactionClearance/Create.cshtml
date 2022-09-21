@@ -1,0 +1,286 @@
+﻿@model TransactionClearanceMaster
+@inject Deal.Services.IUserService userService
+
+@{
+    ViewData["Title"] = "Tran.. Clearance";
+    var PaymentClearanceList = (IEnumerable<ClearanceViewModel>) ViewBag.PaymentClearance;
+}
+<div class="container">
+    <h1>Transaction Clearence</h1>
+    <hr />
+    <div class="row">
+        <div class="col-12 col-md-4">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @if (Model == null) // for create new link
+                {
+                    <input asp-for="MasterId" value="0" type="hidden" />
+                    <input asp-for="DateAdded" value="@DateTime.Now" type="hidden" />
+                    <input asp-for="DateUpdated" type="hidden" />
+                    <input asp-for="UserId" value="@userService.GetUserId()" type="hidden" />
+                }
+                else // for update link
+                {
+                    <input asp-for="MasterId" type="hidden" />
+                    <input asp-for="DateAdded" type="hidden" />
+
+                    <input asp-for="DateUpdated" value="@DateTime.Now" type="hidden" />
+                    <input asp-for="UserId" type="hidden" />
+                }
+
+            <div class="form-group mb-3">
+                <label asp-for="Title" class="control-label"></label>
+                <input  asp-for="Title" class="form-control" />
+                <span asp-validation-for="UserIdFor" class="text-danger"></span>
+            </div>
+                 <div class="form-group mb-3">
+                    <label asp-for="UserIdFor" class="control-label"></label>
+                    <select asp-for="UserIdFor" asp-items="ViewBag.UserIdFor" onchange="getTrasaction()" class="form-select">
+                        <option value="">Select User</option>
+                    </select>
+                    <span asp-validation-for="UserIdFor" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="CurrId" class="control-label"></label>
+                    <select asp-for="CurrId" asp-items="ViewBag.CurrId" onchange="getTrasaction()" class="form-select">
+                        <option value="">Select Currency</option>
+                    </select>
+                    <span asp-validation-for="CurrId" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="PaymentDate" class="control-label"></label>
+                    <input type="date" asp-for="PaymentDate" onchange="getTrasaction()" class="form-control" />
+                    <span asp-validation-for="PaymentDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+
+                    @if (Model != null)
+                    {
+                        <button type="button" onclick="Create(false)" class="btn btn-warning">Update</button>
+                        <button type="button" onclick="Create(true)" name="isDelete" value="true" class="btn btn-danger">Delete</button>
+                    }
+                    else
+                    {
+                        <button type="button" onclick="Create(false)" class="btn btn-primary">Create</button>
+                    }
+                    <a asp-action="Index" class="btn btn-outline-info">Back to List</a>
+                </div>
+
+            </form>
+        </div>
+        <div class="col-12 col-md-8">
+            <table id="tblTransaction" class="table table-hover">
+                <thead class="table-bordered">
+                    <tr>
+                        <th class="d-none">Masterid</th>
+                        <th class="d-none">DetailId</th>
+                        <th class="d-none">TrId</th>
+                        <th class="d-none">IsClearTrans</th>
+                        @*<th>Name</th>*@
+                        <th>Amount</th>
+                        <th>Invoice No</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (PaymentClearanceList != null)
+                    {
+                        foreach (var item in PaymentClearanceList)
+                        {
+                            <tr class=@(item.IsClearTrans ? "selected" : "")>
+                                <td class="d-none">@item.DetailsId</td>
+                                <td class="d-none">@item.DetailsId</td>
+                                <td class="d-none">@item.TransactionId</td>
+                                <td class="d-none">@item.IsClearTrans</td>
+                                @*<th>Name</th>*@
+                                <td>@item.Amount</td>
+                                <td>@item.Order_Id</td>
+                                <td>@item.Email</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+                <tfoot class="table-bordered">
+                    <tr>
+                        <th class="d-none"></th>
+                        <th class="d-none"></th>
+                        <th class="d-none"></th>
+                        <th class="d-none"></th>
+                        @*<th>Name</th>*@
+                        <th>Total Amount - <span id="ttlAmount">0</span></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script>
+
+        let tbltransaction;
+
+        const getTrasaction = async (userId, currId, date) => {
+
+            userId = $("#UserIdFor").val();
+            currId = $("#CurrId").val();
+            date = $("#PaymentDate").val() || new Date();
+
+
+            if (userId == "" || currId == "") {
+                return;
+            }
+
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                async: true,
+                url: '@Url.ActionLink("GetPendingTransaction", "TransactionClearance")',
+                data: { userId, currId, date },
+                success: (result) => {
+                    appendRow(result);
+                },
+                error:(err)=> {
+                    appendRow([]);
+                    console.error(err);
+                }
+            });
+        };
+
+        const appendRow = async (data) => {
+
+            let rows = [];
+            data.forEach((item) => {
+                rows.push([
+                    0,
+                    0,
+                    item.TransactionId,
+                    item.IsClearTrans,
+                    //item.Name,
+                    item.Amount,
+                    item.Order_Id,
+                    item.Email
+                ]);
+            });
+
+            //$("#tblTransaction").DataTable().rows.add(rows).draw();
+            tbltransaction.rows().remove();
+            tbltransaction.rows.add(rows).draw();
+            amountCalculate();
+        }
+
+        const amountCalculate = () => {
+            let data = tbltransaction.rows('.selected').data();
+            let ttlAmount = 0;
+            for (var i = 0; i < data.length; i++) {
+                ttlAmount += parseFloat(data[i][4]);
+            }
+            $("#ttlAmount").text(ttlAmount);
+
+        }
+
+
+        $(document).ready(() => {
+
+            tbltransaction = $("#tblTransaction").DataTable({
+                "aoColumns": [
+                    { "sClass": "MasterId", "visible": false },
+                    { "sClass": "DetailsId", "visible": false },
+                    { "sClass": "TrId", "visible": false },
+                    { "sClass": "IsClearTrans", "visible": false },
+                    { "sClass": "Amount", "visible": true },
+                    { "sClass": "InvoiceNo", "visible": true },
+                    { "sClass": "Email", "visible": true },
+                ],
+                "scrollX": true,
+                "rowCallback": function (row, data) {
+                    const parseBool = JSON.parse(JSON.stringify(data[3]).toLowerCase()); // for when edit mode data pre render
+                    if (parseBool) {
+                        $(row).addClass('selected');
+                    }
+                    //console.log(parseBool);
+                },
+                fixedHeader: {
+                    header: true,
+                    footer: true,
+                },
+                searching: true,
+                autoWidth: false,
+                //select: true,
+                select: 'multi'
+            });
+
+            $("#tblTransaction tbody").on('click', 'tr', () => {
+                //$(this).toggleClass('selected');
+                setTimeout(() => {
+                    //console.log(tbltransaction.rows('.selected').data());
+                    amountCalculate();
+                }, 50);
+               
+                //console.log(tbltransaction.rows('.selected').data());
+            });
+
+            amountCalculate();
+        });
+
+        const Create = (isDelete) => {
+            const TransactionClearanceMaster = {
+                MasterId: $("#MasterId").val() || 0,
+                Title: $("#Title").val().trim(),
+                CurrId: $("#CurrId").val(),
+                UserIdFor: $("#UserIdFor").val(),
+                PaymentDate: $("#PaymentDate").val(),
+                DateAdded: $("#DateAdded").val(),
+                DateUpdated: $("#DateUpdated").val(),
+                UserId: $("#UserId").val(),
+                TransactionClearanceDetails:[]
+            }
+
+            let data = tbltransaction.rows('.selected').data();
+
+            if (data.length < 1) {
+                alert("No transaction selected");
+                return;
+            }
+
+            for (var i = 0; i < data.length; i++) {
+                const TransactionClearanceDetails = {
+                    MasterId: $("#MasterId").val(),
+                    DetailsId: data[i][1],
+                    IssueDate: $("#PaymentDate").val(),
+                    TransactionId: data[i][2],
+                }
+                TransactionClearanceMaster.TransactionClearanceDetails.push(TransactionClearanceDetails);
+            }
+            console.log(TransactionClearanceMaster)
+             $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                async: true,
+                url: '@Url.ActionLink("Create", "TransactionClearance")',
+                 data: { model : TransactionClearanceMaster,isDelete },
+                 success: (result) => {
+                     if (result.IsSuccess) {
+                         window.location.href = '@Url.ActionLink("Index","TransactionClearance")';
+                     }
+
+                },
+                error:(err)=> {
+
+                    console.error(err);
+                }
+            });
+
+
+        }
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "bootstrap@5.1.0",
+      "destination": "wwwroot/lib/bootstrap/"
+    },
+    {
+      "library": "datatables@1.10.21",
+      "destination": "wwwroot/lib/datatables/"
+    },
+    {
+      "library": "datatables.net-scroller-bs5@2.0.5",
+      "destination": "wwwroot/lib/datatables/js/",
+      "files": [
+        "scroller.bootstrap5.min.js"
+      ]
+    }
+  ]
+}

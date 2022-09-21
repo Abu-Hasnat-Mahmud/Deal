@@ -1,0 +1,294 @@
+﻿@model PaymentTransactionDashboard
+
+@{
+    ViewData["Title"] = "Summary";
+    List<PaymentTransactionDashboard> transactionList = ViewBag.TransactionList ?? new List<PaymentTransactionDashboard>();
+}
+
+
+<div class="container">
+
+    <h3 class="text-center my-4">Transaction Summary</h3>
+
+    <form method="post" asp-action="Index" asp-controller="Dashboard">
+        <div class="row justify-content-lg-center my-2">
+            <div class="col-md-3 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">From Date</span>
+                    </div>
+                    @*<input autocomplete="off" class="form-control text-center FromDate" id="FromDate" name="FromDate" placeholder="Select From Date " type="text" value="">*@
+                    @Html.TextBox("FromDate", null, new { @class = "form-control text-center FromDate", @placeholder = "Select From Date ", @autocomplete = "off", name = "FromDate" })
+                </div>
+            </div>
+
+            <div class="col-md-3 col-12">
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">To Date</span>
+                    </div>
+                    @Html.TextBox("ToDate", null, new { @class = "form-control text-center ToDate", @placeholder = "Select To Date ", @autocomplete = "off", name = "ToDate" })
+                </div>
+            </div>
+
+            <div class="col-md-2 col-12">
+                <input type="submit" id="btnLoad" value="Load" class="btn btn-success btn-block rounded" />
+            </div>
+
+        </div>
+
+    </form>
+
+    <ul class="nav nav-pills fw-bold justify-content-evenly py-2  mb-3" id="myTab" role="tablist" style="box-shadow: 0 0.2rem 0.5rem rgba(0,0,0,.15) !important;">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link " id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab" aria-controls="all" aria-selected="true"><p class="fw-bold mb-0">All</p></button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="success-tab" data-bs-toggle="tab" data-bs-target="#success" type="button" role="tab" aria-controls="success" aria-selected="false"><p class="fw-bold mb-0">Success</p></button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="typeselect-tab" data-bs-toggle="tab" data-bs-target="#typeselect" type="button" role="tab" aria-controls="typeselect" aria-selected="false"><p class="fw-bold mb-0">Type Selectd</p></button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="oncreate-tab" data-bs-toggle="tab" data-bs-target="#oncreate" type="button" role="tab" aria-controls="oncreate" aria-selected="false"><p class="fw-bold mb-0">On Create</p></button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="custom-tab" data-bs-toggle="tab" data-bs-target="#custom" type="button" role="tab" aria-controls="custom" aria-selected="false"><p class="fw-bold mb-0">Custom Payment</p></button>
+        </li>
+
+    </ul>
+    <div class="tab-content font-monospace" id="myTabContent">
+        <div class="tab-pane  fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
+            <div class="table-responsive">
+                <table class="table w-100" id="tblAll">
+                    <thead class="w-100">
+                        <tr>
+                            <th class="d-none">Id</th>
+                            <th class="text-center">Amount</th>
+                            <th></th>
+                            <th></th>
+                            <th>Invoice No</th>
+                            <th>Client</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in transactionList)
+                        {
+                            <tr>
+                                <td class="d-none">@item.TransactionId</td>
+                                <td class="text-end"><span class="fw-bold ">@item.Amount</span></td>
+                                <td>@item.Currency</td>
+                                <td>
+                                    @if (item.Status.ToLower() == "success")
+                                    {
+                                        @if (item.IsClearTrans)
+                                        {
+                                            <span class="badge bg-success">@item.Status</span>
+                                            <p class="text-primary d-inline">
+                                                <i class="fas fa-file-invoice-dollar"></i>
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">@item.Status</span>
+                                        }
+
+                                    }
+                                    else if (item.Status.ToLower() == "on create")
+                                    {
+                                        <span class="badge bg-secondary">@item.Status</span>
+                                    }
+                                    else if (item.Status.ToLower() == "custom payment")
+                                    {
+                                        <span class="badge bg-warning">@item.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-dark">@item.Status</span>
+                                    }
+
+                                </td>
+                                <td>@item.Order_Id</td>
+                                <td>@item.Email</td>
+                                <td>@item.PaymentDate.ToShortTimeString(), @item.PaymentDate.ToShortDateString()</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <div class="tab-pane fade" id="success" role="tabpanel" aria-labelledby="success-tab">
+            <div class="table-responsive">
+                <table class="table w-100" id="tblSuccess ">
+                    <thead class="w-100">
+                        <tr>
+                            <th class="d-none">Id</th>
+                            <th class="text-center">Amount</th>
+                            <th></th>
+                            <th></th>
+                            <th>Invoice No</th>
+                            <th>Client</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in transactionList.Where(a => a.Status.ToLower() == "success"))
+                        {
+                            <tr>
+                                <td class="d-none">@item.TransactionId</td>
+                                <td class="text-end"><span class="fw-bold ">@item.Amount</span></td>
+                                <td>@item.Currency</td>
+                                <td>
+                                    @if (item.IsClearTrans)
+                                    {
+                                        <span class="badge bg-success">@item.Status</span>
+                                        <p class="text-primary d-inline">
+                                            <i class="fas fa-file-invoice-dollar"></i>
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">@item.Status</span>
+                                    }
+                                </td>
+                                <td>@item.Order_Id</td>
+                                <td>@item.Email</td>
+                                <td>@item.PaymentDate.ToShortTimeString(), @item.PaymentDate.ToShortDateString()</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <div class="tab-pane fade" id="typeselect" role="tabpanel" aria-labelledby="typeselect-tab">
+            <table class="table w-100">
+                <thead class="">
+                    <tr>
+                        <th class="d-none">Id</th>
+                        <th class="text-center">Amount</th>
+                        <th></th>
+                        <th></th>
+                        <th>Invoice No</th>
+                        <th>Client</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in transactionList.Where(a => a.Status.ToLower() == "type selected"))
+                    {
+                        <tr>
+                            <td class="d-none">@item.TransactionId</td>
+                            <td class="text-end"><span class="fw-bold ">@item.Amount</span></td>
+                            <td>@item.Currency</td>
+                            <td><span class="badge bg-dark">@item.Status</span></td>
+                            <td>@item.Order_Id</td>
+                            <td>@item.Email</td>
+                            <td>@item.PaymentDate.ToShortTimeString(), @item.PaymentDate.ToShortDateString()</td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+
+        </div>
+        <div class="tab-pane fade" id="oncreate" role="tabpanel" aria-labelledby="oncreate-tab">
+            <table class="table w-100">
+                <thead class="">
+                    <tr>
+                        <th class="d-none">Id</th>
+                        <th class="text-center">Amount</th>
+                        <th></th>
+                        <th></th>
+                        <th>Invoice No</th>
+                        <th>Client</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in transactionList.Where(a => a.Status.ToLower() == "on create"))
+                    {
+                        <tr>
+                            <td class="d-none">@item.TransactionId</td>
+                            <td class="text-end"><span class="fw-bold ">@item.Amount</span></td>
+                            <td>@item.Currency</td>
+                            <td><span class="badge bg-secondary">@item.Status</span></td>
+                            <td>@item.Order_Id</td>
+                            <td>@item.Email</td>
+                            <td>@item.PaymentDate.ToShortTimeString(), @item.PaymentDate.ToShortDateString()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="custom" role="tabpanel" aria-labelledby="custom-tab">
+            <table class="table w-100">
+                <thead class="w-100">
+                    <tr>
+                        <th class="d-none">Id</th>
+                        <th class="text-center">Amount</th>
+                        <th></th>
+                        <th></th>
+                        <th>Invoice No</th>
+                        <th>Client</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in transactionList.Where(a => a.Status.ToLower() == "custom payment"))
+                    {
+                        <tr>
+                            <td class="d-none">@item.TransactionId</td>
+                            <td class="text-end"><span class="fw-bold ">@item.Amount</span></td>
+                            <td>@item.Currency</td>
+                            <td><span class="badge bg-warning">@item.Status</span></td>
+                            <td>@item.Order_Id</td>
+                            <td>@item.Email</td>
+                            <td>@item.PaymentDate.ToShortTimeString(), @item.PaymentDate.ToShortDateString()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+
+</div>
+
+@section Scripts {
+
+
+
+    <script>
+
+
+
+        $(document).ready(() => {
+
+            $("#FromDate, #ToDate").datepicker({
+                dateFormat: "dd-M-y",
+                changeMonth: true,
+                changeYear: true
+            });
+            var table = $('.table').DataTable({
+                // lengthChange: false,
+                "scrollX": true,
+                "order": [[1, 'asc']],
+                buttons: ['copy', 'excel', 'pdf', 'colvis']
+            });
+            table.buttons().container()
+                .appendTo('#example_wrapper .col-md-6:eq(0)');
+
+
+
+        });
+
+
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

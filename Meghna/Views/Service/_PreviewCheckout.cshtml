@@ -1,0 +1,81 @@
+﻿@model CheckoutMaster
+
+<style>
+    .Box-root {
+        box-sizing: border-box;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        width: 100px;
+        height: 100px;
+        border-radius: 4px;
+    }
+</style>
+
+
+<div id="item-preview-area" class="row row-cols-1 justify-content-center shadow m-1 mx-md-4 my-3 p-4 rounded-2" style="background-color:ghostwhite;">
+    @if (Model == null)
+    {
+        <div>
+            <p class="" id="preview-item-name">Item</p>
+            <h5 class=""><span id="preview-item-price">00</span> - <span id="preview-item-currency">$</span></h5>
+        </div>
+
+        <div class="Box-root col-12" id="preview-item-image" style="background-image: url(/images/empty.jpg);"></div>
+        <hr />
+
+        <div class="form-group my-2">
+            <label for="UserEmail" class="control-label">Email</label>
+            <div class="input-group">
+                <input class="form-control" type="email" id="UserEmail" name="UserEmail" value="" placeholder="enter email" required />
+            </div>
+        </div>
+
+        <div class="form-group my-2">
+            <label for="UserEmail" class="control-label">Address</label>
+            <textarea id="address" class="form-control"></textarea>
+        </div>
+
+        <div class="form-group my-2 text-center">
+            <a asp-controller="Payment" asp-action="Index" asp-route-id="" class="btn btn-primary">GO PAY </a>
+        </div>
+    }
+    else
+    {
+        
+        <input type="hidden" id="key" value="@Model.Key" />
+        <div>
+            <p class="" id="preview-item-name">@Model.CheckoutDetailses?.FirstOrDefault().Product?.Name</p>
+            <h5 class=""><span id="preview-item-price">@Model.CheckoutDetailses?.FirstOrDefault().Price</span> - <span id="preview-item-currency">@Model.CheckoutDetailses?.FirstOrDefault().Product?.Currency.Name</span></h5>
+        </div>
+
+        <div class="Box-root col-12 mb-2" id="preview-item-image" style="background-image: url(..@Model.CheckoutDetailses?.FirstOrDefault().Product?.Image);"></div>
+
+        <hr />
+
+        <div class="form-group my-2">
+            <label for="UserEmail" class="control-label">Email</label>
+            <div class="input-group">
+                <input class="form-control" type="email" id="UserEmail" name="UserEmail" value="" placeholder="enter email" required />
+            </div>
+        </div>
+
+        <div class="form-group my-2">
+            <label for="Address" class="control-label">Address</label>
+            <textarea id="Address" name="Address" class="form-control"></textarea>
+        </div>
+
+        <div class="form-group mt-2 text-center">
+
+            <button type="button" id="go-pay" class="btn btn-primary">GO PAY @Model.CheckoutDetailses?.FirstOrDefault().Price-@Model.CheckoutDetailses?.FirstOrDefault().Product?.Currency.Name</button>
+        </div>
+
+
+    }
+
+
+
+
+
+</div>
+

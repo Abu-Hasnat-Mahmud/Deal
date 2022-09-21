@@ -1,0 +1,136 @@
+﻿@model Product
+@inject Deal.Services.IUserService userService
+
+@{
+    ViewData["Title"] = "Product";
+}
+
+
+<style>
+    #output_image {
+        width: 120px;
+        height: 100px;
+        /*border-color: lightgray;*/
+        border: 1px dashed lightgray;
+    }
+</style>
+
+<style media="screen and (max-width:730px)">
+    #output_image {
+        width: 70px;
+        height: 50px;
+    }
+</style>
+
+<div class="container">
+    <h1>Product</h1>
+
+
+    <hr />
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Create" enctype="multipart/form-data" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @if (Model == null) // for create new link
+                {
+                    <input asp-for="ProductId" value="0" type="hidden" />
+                    <input asp-for="DateAdded" value="@DateTime.Now" type="hidden" />
+                    <input asp-for="DateUpdated" type="hidden" />
+
+                    <input asp-for="UserId" value="@userService.GetUserId()" type="hidden" />
+                }
+                else // for update link
+                {
+                    <input asp-for="ProductId" type="hidden" />
+                    <input asp-for="DateAdded" type="hidden" />
+
+                    <input asp-for="DateUpdated" value="@DateTime.Now" type="hidden" />
+                    <input asp-for="UserId" type="hidden" />
+                }
+
+                <div class="form-group mb-3">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    @*<input asp-for="ImageFile" accept="image/*" onchange="preview_image(event)">*@
+
+                    <label asp-for="ImageFile">
+                        @if (Model != null && Model.Image != null)
+                        {
+                            <img id="output_image" src="..@Model.Image" class="img-fluid p-2" />
+                        }
+                        else
+                        {
+                            <img id="output_image" src="~/images/empty.jpg" class=" img-fluid" />
+                        }
+                    </label>
+                    <input asp-for="ImageFile" class="d-none" accept="image/*" onchange="preview_image(event)">
+                </div>
+
+
+
+                <div class="form-group mb-3">
+                    <label asp-for="Price" class="control-label"></label>
+                    <div class="input-group ">
+                        <input asp-for="Price" class="form-control" />
+                        <span class="input-group-append">
+                            <select asp-items="ViewBag.Currency" asp-for="CurrId" class="form-select">
+                            </select>
+                        </span>
+                    </div>
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                    <span asp-validation-for="CurrId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Description" class="control-label"></label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+
+
+
+                <div class="form-group mb-3">
+
+                    @if (Model != null)
+                    {
+                        <input type="submit" value="Update" class="btn btn-warning" />
+                        <button type="submit" name="isDelete" value="true" class="btn btn-danger">Delete</button>
+                    }
+                    else
+                    {
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    }
+                    <a asp-action="Index" class="btn btn-outline-info">Back to List</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Scripts {
+
+    <script>
+
+        function preview_image(event) {
+            var reader = new FileReader();
+            reader.onload = function () {
+                var output = document.getElementById('output_image');
+                output.src = reader.result;
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
