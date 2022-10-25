@@ -51,7 +51,8 @@ namespace Deal.Helpers
         }
 
        
-        static readonly string conString = "Server=36.255.68.118; Database=MeghnaDB; user id=meghna; password=meghna@1234; MultipleActiveResultSets=true; Connection Timeout=300;";
+        //static readonly string conString = "Server=36.255.68.118; Database=MeghnaDB; user id=meghna; password=meghna@1234; MultipleActiveResultSets=true; Connection Timeout=300;";
+        static readonly string conString = "Server=.; Database=DealDB; user id=sa; password=Ult72349$; MultipleActiveResultSets=true; Connection Timeout=300;";
 
 
         //helper snippet to exec a procedure and map the result to a generic type of class
