@@ -49,7 +49,7 @@
             <h5 class=""><span id="preview-item-price">@Model.CheckoutDetailses?.FirstOrDefault().Price</span> - <span id="preview-item-currency">@Model.CheckoutDetailses?.FirstOrDefault().Product?.Currency.Name</span></h5>
         </div>
 
-        <div class="Box-root col-12 mb-2" id="preview-item-image" style="background-image: url(..@Model.CheckoutDetailses?.FirstOrDefault().Product?.Image);"></div>
+        <div class="Box-root col-12 mb-2" id="preview-item-image" style="background-image: url(@Model.CheckoutDetailses?.FirstOrDefault().Product?.Image);"></div>
 
         <hr />
 
