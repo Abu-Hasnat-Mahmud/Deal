@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Deal.Models
 {
-    public class GTRDBContext : IdentityDbContext<ApplicationUser>
+    public class DBContext : IdentityDbContext<ApplicationUser>
     {
-        public GTRDBContext(DbContextOptions<GTRDBContext> options) : base(options){ }
+        public DBContext(DbContextOptions<DBContext> options) : base(options){ }
         
         public DbSet<PayType> PayType { get; set; }
         public DbSet<UserPayTypeControl> UserPayTypeControl { get; set; }

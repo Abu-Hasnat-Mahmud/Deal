@@ -16,12 +16,12 @@ namespace Deal.Controllers
     //[Authorize]
     public class PaymentController : Controller
     {
-        private readonly GTRDBContext _db;
+        private readonly DBContext _db;
         private readonly IUserService _userService;
         private readonly IConfiguration _configuration;
         private readonly ISetupRepository _setupRepository;
         private readonly IPaymentRepository _paymentRepository;
-        public PaymentController(GTRDBContext db, IUserService userService, IConfiguration configuration, IPaymentRepository paymentRepository, ISetupRepository setupRepository)
+        public PaymentController(DBContext db, IUserService userService, IConfiguration configuration, IPaymentRepository paymentRepository, ISetupRepository setupRepository)
         {
             _db = db;
             _userService = userService;

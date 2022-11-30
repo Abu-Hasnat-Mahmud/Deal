@@ -21,7 +21,7 @@ namespace Deal.Controllers
     public class ServiceController : Controller
     {
 
-        private readonly GTRDBContext _db;
+        private readonly DBContext _db;
         private readonly IUserService _userService;
         private readonly ISetupRepository _setupRepository;
         private readonly IPaymentRepository _paymentRepository;
@@ -29,7 +29,7 @@ namespace Deal.Controllers
         //public IConfiguration _config { get; }
 
         //private readonly LinkGenerator _linkGenerator;
-        public ServiceController(GTRDBContext db, IUserService userService, ISetupRepository setupRepository, IPaymentRepository paymentRepository /*, LinkGenerator linkGenerator IConfiguration config,IAccountRepository accountRepository, */)
+        public ServiceController(DBContext db, IUserService userService, ISetupRepository setupRepository, IPaymentRepository paymentRepository /*, LinkGenerator linkGenerator IConfiguration config,IAccountRepository accountRepository, */)
         {
             _db = db;
             _userService = userService;

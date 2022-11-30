@@ -16,7 +16,7 @@ namespace Deal.Controllers
     public class ClientController : Controller
     {
 
-        private readonly GTRDBContext _db;
+        private readonly DBContext _db;
         private readonly IUserService _userService;
         private readonly ISetupRepository _setupRepository;
 
@@ -24,7 +24,7 @@ namespace Deal.Controllers
         //public IConfiguration _config { get; }
 
         //private readonly LinkGenerator _linkGenerator;
-        public ClientController(GTRDBContext db, IUserService userService, ISetupRepository setupRepository /*, LinkGenerator linkGenerator IConfiguration config,IAccountRepository accountRepository, */)
+        public ClientController(DBContext db, IUserService userService, ISetupRepository setupRepository /*, LinkGenerator linkGenerator IConfiguration config,IAccountRepository accountRepository, */)
         {
             _db = db;
             _userService = userService;

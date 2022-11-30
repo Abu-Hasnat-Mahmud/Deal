@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Deal.Migrations
 {
-    [DbContext(typeof(GTRDBContext))]
+    [DbContext(typeof(DBContext))]
     partial class GTRDBContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

@@ -19,9 +19,9 @@ namespace Deal.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        private readonly GTRDBContext _db;
+        private readonly DBContext _db;
         public IConfiguration Config { get; }
-        public AccountController(IAccountRepository accountRepository, GTRDBContext db, IConfiguration config, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+        public AccountController(IAccountRepository accountRepository, DBContext db, IConfiguration config, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             _accountRepository = accountRepository;
             _db = db;

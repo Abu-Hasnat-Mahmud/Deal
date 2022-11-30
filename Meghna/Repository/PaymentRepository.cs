@@ -12,13 +12,13 @@ namespace Deal.Repository
 {
     class PaymentRepository : IPaymentRepository
     {
-        private GTRDBContext _gTRDBContext;
+        private DBContext _gTRDBContext;
        
         private readonly IUserService _userService;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
 
-        public PaymentRepository(IUserService userService, IEmailService emailService, IConfiguration configuration, GTRDBContext gTRDBContext)
+        public PaymentRepository(IUserService userService, IEmailService emailService, IConfiguration configuration, DBContext gTRDBContext)
         {
             _userService = userService;
             _gTRDBContext = gTRDBContext;

@@ -32,11 +32,11 @@ namespace Deal
         public void ConfigureServices(IServiceCollection services)
         {
             // GTR  DB context
-            services.AddDbContext<GTRDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Connection")));
+            services.AddDbContext<DBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Connection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<GTRDBContext>()
+                .AddEntityFrameworkStores<DBContext>()
                 .AddDefaultTokenProviders();
 
             //services.AddControllers().AddJsonOptions(options =>

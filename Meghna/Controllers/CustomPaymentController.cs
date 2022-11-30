@@ -19,7 +19,7 @@ namespace Deal.Controllers
     public class CustomPaymentController : Controller
     {
 
-        private readonly GTRDBContext _db;
+        private readonly DBContext _db;
         private readonly IUserService _userService;
         private IFileService _fileService;
         private ISetupRepository _setuprepository;
@@ -28,7 +28,7 @@ namespace Deal.Controllers
         //public IConfiguration _config { get; }
 
         //private readonly LinkGenerator _linkGenerator;
-        public CustomPaymentController(GTRDBContext db, ISetupRepository setupRepository, IUserService userService, IFileService fileService /*, LinkGenerator linkGenerator IConfiguration config,IAccountRepository accountRepository, */, IPaymentRepository paymentRepository)
+        public CustomPaymentController(DBContext db, ISetupRepository setupRepository, IUserService userService, IFileService fileService /*, LinkGenerator linkGenerator IConfiguration config,IAccountRepository accountRepository, */, IPaymentRepository paymentRepository)
         {
             _db = db;
             _userService = userService;

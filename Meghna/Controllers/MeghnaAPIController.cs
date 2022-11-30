@@ -16,11 +16,11 @@ namespace Deal.Controllers
     
     public class MeghnaAPIController : Controller
     {
-        private readonly GTRDBContext _db;
+        private readonly DBContext _db;
         private readonly IUserService _userService;
         private readonly IConfiguration _configuration;
         private readonly IPaymentRepository _paymentRepository;
-        public MeghnaAPIController(GTRDBContext db, IUserService userService, IConfiguration configuration, IPaymentRepository paymentRepository)
+        public MeghnaAPIController(DBContext db, IUserService userService, IConfiguration configuration, IPaymentRepository paymentRepository)
         {
             _db = db;
             _userService = userService;

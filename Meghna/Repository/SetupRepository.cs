@@ -12,10 +12,10 @@ namespace Deal.Repository
 {
     class SetupRepository : ISetupRepository
     {
-        private GTRDBContext _gTRDBContext;
+        private DBContext _gTRDBContext;
         private readonly IUserService _userService;
 
-        public SetupRepository(IUserService userService, GTRDBContext gTRDBContext)
+        public SetupRepository(IUserService userService, DBContext gTRDBContext)
         {
             _userService = userService;
             _gTRDBContext = gTRDBContext;

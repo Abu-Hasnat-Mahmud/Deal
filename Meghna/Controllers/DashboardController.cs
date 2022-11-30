@@ -18,11 +18,11 @@ namespace Deal.Controllers
     [Authorize]
     public class DashboardController : Controller
     {
-        private readonly GTRDBContext _db;
+        private readonly DBContext _db;
         private readonly IUserService _userService;
         private readonly IConfiguration _configuration;
         private readonly IPaymentRepository _paymentRepository;
-        public DashboardController(GTRDBContext db, IUserService userService, IConfiguration configuration, IPaymentRepository paymentRepository)
+        public DashboardController(DBContext db, IUserService userService, IConfiguration configuration, IPaymentRepository paymentRepository)
         {
             _db = db;
             _userService = userService;

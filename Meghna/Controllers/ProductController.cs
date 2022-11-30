@@ -19,7 +19,7 @@ namespace Deal.Controllers
     public class ProductController : Controller
     {
 
-        private readonly GTRDBContext _db;
+        private readonly DBContext _db;
         private readonly IUserService _userService;
         private IFileService _fileService;
         private ISetupRepository _setuprepository;
@@ -27,7 +27,7 @@ namespace Deal.Controllers
         //public IConfiguration _config { get; }
 
         //private readonly LinkGenerator _linkGenerator;
-        public ProductController(GTRDBContext db, ISetupRepository setupRepository, IUserService userService, IFileService fileService /*, LinkGenerator linkGenerator IConfiguration config,IAccountRepository accountRepository, */)
+        public ProductController(DBContext db, ISetupRepository setupRepository, IUserService userService, IFileService fileService /*, LinkGenerator linkGenerator IConfiguration config,IAccountRepository accountRepository, */)
         {
             _db = db;
             _userService = userService;

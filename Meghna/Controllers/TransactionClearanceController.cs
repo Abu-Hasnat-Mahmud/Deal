@@ -20,7 +20,7 @@ namespace Deal.Controllers
     public class TransactionClearanceController : Controller
     {
 
-        private readonly GTRDBContext _db;
+        private readonly DBContext _db;
         private readonly IUserService _userService;
         private readonly ISetupRepository _setupRepository;
         private readonly IPaymentRepository _paymentRepository;
@@ -29,7 +29,7 @@ namespace Deal.Controllers
         //public IConfiguration _config { get; }
 
         //private readonly LinkGenerator _linkGenerator;
-        public TransactionClearanceController(GTRDBContext db, IUserService userService, ISetupRepository setupRepository /*, LinkGenerator linkGenerator IConfiguration config,IAccountRepository accountRepository, */, IPaymentRepository paymentRepository)
+        public TransactionClearanceController(DBContext db, IUserService userService, ISetupRepository setupRepository /*, LinkGenerator linkGenerator IConfiguration config,IAccountRepository accountRepository, */, IPaymentRepository paymentRepository)
         {
             _db = db;
             _userService = userService;

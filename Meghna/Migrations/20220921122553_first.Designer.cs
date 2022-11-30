@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Deal.Migrations
 {
-    [DbContext(typeof(GTRDBContext))]
+    [DbContext(typeof(DBContext))]
     [Migration("20220921122553_first")]
     partial class first
     {
